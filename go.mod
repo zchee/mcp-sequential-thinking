@@ -4,12 +4,12 @@ go 1.25
 
 require (
 	github.com/bytedance/sonic v1.14.3-0.20251218033458-3afe8f25c931 // @main
+	github.com/google/go-cmp v0.7.0
 	github.com/google/jsonschema-go v0.4.3-0.20251219210730-8bd57428bbbe // @main
 	github.com/google/uuid v1.6.0
 	github.com/modelcontextprotocol/go-sdk v1.2.0-pre.2 // @main
+	github.com/zchee/dumper v1.8.1
 )
-
-require github.com/zchee/dumper v0.0.0-20251222070044-f56691b57aa2
 
 require (
 	github.com/bytedance/gopkg v0.1.3 // indirect
