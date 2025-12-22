@@ -22,7 +22,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"net"
 	"net/http"
@@ -122,7 +121,8 @@ func main() {
 	}
 
 	if err := run(); err != nil {
-		log.Fatal(err)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
 
@@ -134,7 +134,7 @@ func run() error {
 		var err error
 		f, err = os.OpenFile(flagLogPath, os.O_RDWR|os.O_CREATE, 0o666)
 		if err != nil {
-			log.Fatal(err)
+			return fmt.Errorf("open %q file: %w", flagLogPath, err)
 		}
 		defer f.Close()
 
@@ -170,13 +170,11 @@ func run() error {
 	inputSchema.Properties["totalThoughts"].Minimum = ptr(float64(1))
 	inputSchema.Properties["revisesThought"].Minimum = ptr(float64(1))
 	inputSchema.Properties["branchFromThought"].Minimum = ptr(float64(1))
-	// dumper.Dump(inputSchema)
 
 	outputSchema, err := jsonschema.For[Output](&jsonschema.ForOptions{})
 	if err != nil {
-		log.Fatal(err)
+		return fmt.Errorf("parse Output: %w", err)
 	}
-	// dumper.Dump(outputSchema)
 
 	sequentialThinkingTool := &mcp.Tool{
 		Name:         "sequentialthinking",
@@ -221,7 +219,7 @@ func run() error {
 	logger.InfoContext(ctx, "sequential thinking mcp server running on stdio")
 	if err := srv.Run(ctx, tr); err != nil {
 		logger.ErrorContext(ctx, "serve sequential thinking mcp stdio server", slog.Any("error", err))
-		os.Exit(1)
+		return fmt.Errorf("serve sequential thinking mcp stdio server: %w", err)
 	}
 
 	return nil
