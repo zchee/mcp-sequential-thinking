@@ -1,5 +1,9 @@
 # Sequential Thinking MCP Server (Go)
 
+[![CI](https://github.com/zchee/mcp-sequential-thinking/actions/workflows/test.yaml/badge.svg)](https://github.com/zchee/mcp-sequential-thinking/actions/workflows/test.yaml)
+[![Go Reference](https://pkg.go.dev/badge/github.com/zchee/mcp-sequential-thinking.svg)](https://pkg.go.dev/github.com/zchee/mcp-sequential-thinking)
+![GitHub License](https://img.shields.io/github/license/zchee/mcp-sequential-thinking?style=flat-square&color=blue)
+
 A Go implementation of the Model Context Protocol (MCP) sequential thinking tool for structured, reflective problem-solving.
 
 ## Features
