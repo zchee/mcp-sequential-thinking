@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  GOEXPERIMENT: cgocheck2,loopvar,newinliner,jsonv2,greenteagc
+  GOEXPERIMENT: loopvar,newinliner,jsonv2,greenteagc
 
 jobs:
   test:
