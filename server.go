@@ -20,10 +20,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"maps"
 	"math"
 	"os"
-	"slices"
+	"sort"
 	"strconv"
 	"strings"
 	"sync"
@@ -56,8 +55,9 @@ type Output struct {
 
 // SequentialThinkingServer implements the sequential thinking logic.
 type SequentialThinkingServer struct {
-	thoughtHistory       []ThoughtData
-	branches             map[string][]ThoughtData
+	thoughtHistory       []struct{}
+	branches             map[string]struct{}
+	branchKeys           []string
 	enableThoughtLogging bool
 	mu                   sync.Mutex
 }
@@ -71,8 +71,8 @@ func NewSequentialThinkingServer() *SequentialThinkingServer {
 	}
 
 	return &SequentialThinkingServer{
-		thoughtHistory:       make([]ThoughtData, 0),
-		branches:             make(map[string][]ThoughtData),
+		thoughtHistory:       make([]struct{}, 0),
+		branches:             make(map[string]struct{}),
 		enableThoughtLogging: enableLogging,
 	}
 }
@@ -161,10 +161,7 @@ func (s *SequentialThinkingServer) formatThought(thoughtData ThoughtData) string
 
 // ProcessThought processes a thought request.
 func (s *SequentialThinkingServer) ProcessThought(ctx context.Context, request *mcp.CallToolRequest, input ThoughtData) (*mcp.CallToolResult, any, error) {
-	s.mu.Lock()
-
 	if err := s.validateThoughtData(input); err != nil {
-		s.mu.Unlock()
 		return nil, nil, err
 	}
 
@@ -172,15 +169,35 @@ func (s *SequentialThinkingServer) ProcessThought(ctx context.Context, request *
 		input.TotalThoughts = input.ThoughtNumber
 	}
 
-	s.thoughtHistory = append(s.thoughtHistory, input)
+	var (
+		branchesSnapshot []string
+		historyLen       int
+	)
+
+	s.mu.Lock()
+	s.thoughtHistory = append(s.thoughtHistory, struct{}{})
 
 	if input.BranchFromThought < 0 && input.BranchId != "" {
 		branchID := input.BranchId
 		if _, exists := s.branches[branchID]; !exists {
-			s.branches[branchID] = make([]ThoughtData, 0)
+			s.branches[branchID] = struct{}{}
+			insertAt := sort.SearchStrings(s.branchKeys, branchID)
+			if insertAt == len(s.branchKeys) {
+				s.branchKeys = append(s.branchKeys, branchID)
+			} else if s.branchKeys[insertAt] != branchID {
+				s.branchKeys = append(s.branchKeys, "")
+				copy(s.branchKeys[insertAt+1:], s.branchKeys[insertAt:])
+				s.branchKeys[insertAt] = branchID
+			}
 		}
-		s.branches[branchID] = append(s.branches[branchID], input)
 	}
+
+	historyLen = len(s.thoughtHistory)
+	if len(s.branchKeys) > 0 {
+		branchesSnapshot = append([]string(nil), s.branchKeys...)
+	}
+
+	s.mu.Unlock()
 
 	if s.enableThoughtLogging {
 		formatted := s.formatThought(input)
@@ -188,19 +205,15 @@ func (s *SequentialThinkingServer) ProcessThought(ctx context.Context, request *
 	}
 
 	// Prepare response
-	branches := slices.Sorted(maps.Keys(s.branches))
-
 	output := Output{
 		ThoughtNumber:        input.ThoughtNumber,
 		TotalThoughts:        input.TotalThoughts,
 		NextThoughtNeeded:    input.NextThoughtNeeded,
-		Branches:             branches,
-		ThoughtHistoryLength: len(s.thoughtHistory),
+		Branches:             branchesSnapshot,
+		ThoughtHistoryLength: historyLen,
 	}
 
-	s.mu.Unlock()
-
-	data, err := sonic.ConfigFastest.MarshalIndent(&output, "", "  ")
+	data, err := sonic.ConfigFastest.MarshalToString(&output)
 	if err != nil {
 		return nil, nil, fmt.Errorf("marshal response: %w", err)
 	}
@@ -208,7 +221,7 @@ func (s *SequentialThinkingServer) ProcessThought(ctx context.Context, request *
 	return &mcp.CallToolResult{
 		Content: []mcp.Content{
 			&mcp.TextContent{
-				Text: string(data),
+				Text: data,
 			},
 		},
 	}, nil, nil
