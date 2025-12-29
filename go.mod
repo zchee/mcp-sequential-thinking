@@ -7,7 +7,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/google/jsonschema-go v0.4.3-0.20251219210730-8bd57428bbbe // @main
 	github.com/google/uuid v1.6.0
-	github.com/modelcontextprotocol/go-sdk v1.2.0-pre.2 // @main
+	github.com/modelcontextprotocol/go-sdk v1.2.0 // @main
 	github.com/zchee/dumper v1.8.1
 )
 
