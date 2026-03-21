@@ -58,7 +58,7 @@ func BenchmarkProcessThought_BranchInsert(b *testing.B) {
 	b.ResetTimer()
 
 	for i := 0; i < b.N; i++ {
-		input.BranchId = branchIDs[i]
+		input.BranchID = branchIDs[i]
 		_, _, err := server.ProcessThought(b.Context(), nil, input)
 		if err != nil {
 			b.Fatalf("process thought: %v", err)

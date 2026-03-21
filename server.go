@@ -40,7 +40,7 @@ type ThoughtData struct {
 	IsRevision        bool   `json:"isRevision,omitzero" jsonschema:"Estimated Whether this revises previous thinking"`
 	RevisesThought    int    `json:"revisesThought,omitzero" jsonschema:"Which thought is being reconsidered"`
 	BranchFromThought int    `json:"branchFromThought,omitzero" jsonschema:"Branching point thought number"`
-	BranchId          string `json:"branchId,omitzero" jsonschema:"Branch identifier"`
+	BranchID          string `json:"branchId,omitzero" jsonschema:"Branch identifier"`
 	NeedsMoreThoughts bool   `json:"needsMoreThoughts,omitzero" jsonschema:"If more thoughts are needed"`
 }
 
@@ -107,8 +107,8 @@ func (s *SequentialThinkingServer) formatThought(thoughtData ThoughtData) string
 	case thoughtData.BranchFromThought < 0:
 		prefixText = "🌿 Branch"
 		branchID := ""
-		if thoughtData.BranchId != "" {
-			branchID = thoughtData.BranchId
+		if thoughtData.BranchID != "" {
+			branchID = thoughtData.BranchID
 		}
 		context = fmt.Sprintf(" (from thought %d, ID: %s)", thoughtData.BranchFromThought, branchID)
 
@@ -177,8 +177,8 @@ func (s *SequentialThinkingServer) ProcessThought(ctx context.Context, request *
 	s.mu.Lock()
 	s.thoughtHistory = append(s.thoughtHistory, struct{}{})
 
-	if input.BranchFromThought < 0 && input.BranchId != "" {
-		branchID := input.BranchId
+	if input.BranchFromThought < 0 && input.BranchID != "" {
+		branchID := input.BranchID
 		if _, exists := s.branches[branchID]; !exists {
 			s.branches[branchID] = struct{}{}
 			insertAt := sort.SearchStrings(s.branchKeys, branchID)

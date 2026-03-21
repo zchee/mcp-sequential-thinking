@@ -228,7 +228,7 @@ func TestSequentialThinkingServerFormatThought(t *testing.T) {
 				ThoughtNumber:     2,
 				TotalThoughts:     3,
 				BranchFromThought: -1,
-				BranchId:          "b1",
+				BranchID:          "b1",
 			},
 			wantContains: []string{"Branch", "from thought -1, ID: b1", "branch"},
 		},
@@ -302,7 +302,7 @@ func TestSequentialThinkingServerProcessThoughtSuccess(t *testing.T) {
 					ThoughtNumber:     2,
 					TotalThoughts:     1,
 					BranchFromThought: -1,
-					BranchId:          "b",
+					BranchID:          "b",
 				},
 				{
 					Thought:           "second",
@@ -310,7 +310,7 @@ func TestSequentialThinkingServerProcessThoughtSuccess(t *testing.T) {
 					ThoughtNumber:     3,
 					TotalThoughts:     3,
 					BranchFromThought: -2,
-					BranchId:          "a",
+					BranchID:          "a",
 				},
 			},
 			wantOutputs: []Output{
@@ -338,7 +338,7 @@ func TestSequentialThinkingServerProcessThoughtSuccess(t *testing.T) {
 					ThoughtNumber:     1,
 					TotalThoughts:     1,
 					BranchFromThought: 1,
-					BranchId:          "ignored",
+					BranchID:          "ignored",
 				},
 			},
 			wantOutputs: []Output{
