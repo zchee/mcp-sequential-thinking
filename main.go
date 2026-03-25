@@ -144,7 +144,7 @@ func run() error {
 	srvImpl := &mcp.Implementation{
 		Name:       "sequential-thinking",
 		Version:    Version,
-		WebsiteURL: "",
+		WebsiteURL: "https://github.com/zchee/mcp-sequential-thinking",
 	}
 	opts := &mcp.ServerOptions{
 		// TODO(zchee): The [mcp.ServerOptions.Instructions] are usually enough tool description, but set a global prompt such as "Think step by step"
@@ -152,8 +152,8 @@ func run() error {
 		Logger:   logger,
 		HasTools: true,
 		GetSessionID: func() string {
-			// Use UUID instead of [mcp.randText]
-			return uuid.NewString()
+			// Use UUID7 instead of [mcp.randText]
+			return uuid.Must(uuid.NewV7()).String()
 		},
 	}
 	srv := mcp.NewServer(srvImpl, opts)
@@ -173,7 +173,13 @@ func run() error {
 	}
 
 	sequentialThinkingTool := &mcp.Tool{
-		Name:         "sequentialthinking",
+		Name: "sequentialthinking",
+		Annotations: &mcp.ToolAnnotations{
+			ReadOnlyHint:    true,
+			DestructiveHint: new(false),
+			IdempotentHint:  true,
+			OpenWorldHint:   new(true),
+		},
 		Description:  description,
 		InputSchema:  inputSchema,
 		OutputSchema: outputSchema,
