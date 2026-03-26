@@ -4,6 +4,7 @@ go 1.26
 
 require (
 	github.com/bytedance/sonic v1.15.1-0.20260316072832-3835c030aefd // @main
+	github.com/go-json-experiment/json v0.0.0-20260214004413-d219187c3433
 	github.com/google/go-cmp v0.7.0
 	github.com/google/jsonschema-go v0.4.3-0.20251219210730-8bd57428bbbe // @main
 	github.com/google/uuid v1.6.0

@@ -17,13 +17,13 @@
 package main
 
 import (
-	"encoding/json/jsontext"
-	"encoding/json/v2"
 	"io"
 	"os"
 	"strings"
 	"testing"
 
+	"github.com/go-json-experiment/json"
+	"github.com/go-json-experiment/json/jsontext"
 	"github.com/google/go-cmp/cmp"
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
